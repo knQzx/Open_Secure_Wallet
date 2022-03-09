@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="https://tinyurl.com/yavauxw5">
+    <title>Wallets</title>
+    <style>
+        .card {
+            width:  500px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION  -->
+    <nav class="nav nav-pills nav-fill">
+        <a class="{{ elements_nav[0] }}" href="/personal_account">Personal Account</a>
+        <a class="{{ elements_nav[1] }}" href="/wallets">Wallets</a>
+        <a class="{{ elements_nav[2] }}" href="/settings">Settings</a>
+        <a class="{{ elements_nav[3] }}" href="/support">Support</a>
+    </nav>
+    <!-- NAVIGATION  -->
+    <!--  CARD BTC  -->
+    <a href="/wallets" class="badge badge-danger" style="width: 20rem;position: relative; left: 50%; transform: translate(-50%, 0);">Back</a>
+    <div class="card" style="width: 20rem;">
+        <div class="card-body">
+            <div style="text-align: center" class="alert alert-dark" role="alert">
+                BTC: {{address_wallet}}
+            </div>
+            <p class="card-text">This is a peer-to-peer payment system that uses the unit of the same name to account for transactions.</p>
+        </div>
+        <div class="card-header">
+            In monetary terms
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                BTC: {{balances['btc']}}
+            </li>
+            <li class="list-group-item">
+                USD: {{balances['usd']}}
+            </li>
+            <li class="list-group-item">
+                EUR: {{balances['eur']}}
+            </li>
+        </ul>
+        <div style="display: flex; justify-content: space-evenly;" class="card-body">
+            <a href="/send_btc/{{wallet}}" class="card-link"><button type="button" class="btn btn-warning">Send BTC</button></a>&nbsp;
+            <a href="/get_btc/{{wallet}}" class="card-link"><button type="button" class="btn btn-success">Get BTC</button></a>
+        </div>
+    </div>
+    <!--  CARD BTC  -->
+</body>
+</html>

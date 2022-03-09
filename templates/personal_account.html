@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="https://tinyurl.com/yavauxw5">
+    <title>Personal Account</title>
+    <style>
+        form.account_form {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 450px;
+            background-color: #949494;
+            border: 1px solid gray;
+            border-radius: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION  -->
+    <nav class="nav nav-pills nav-fill">
+        <a class="{{ elements_nav[0] }}" href="/personal_account">Personal Account</a>
+        <a class="{{ elements_nav[1] }}" href="/wallets">Wallets</a>
+        <a class="{{ elements_nav[2] }}" href="/settings">Settings</a>
+        <a class="{{ elements_nav[3] }}" href="/support">Support</a>
+    </nav>
+    <!-- NAVIGATION  -->
+    <!--  FORM  -->
+    <form class="account_form" method="post" action="/personal_account{{action}}">
+        <h3>Personal Account</h3><br>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Password</span>
+            </div>
+            {% if editing == 'True' %}
+                <input type="text" class="form-control" value="{{password_user}}" name="password_user" placeholder="Password" aria-label="Username Telegram" aria-describedby="basic-addon1" required>
+            {% else %}
+                <input type="text" class="form-control" value="{{password_user}}" name="password_user" placeholder="Password" aria-label="Username Telegram" aria-describedby="basic-addon1" disabled>
+            {% endif %}
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon2">Secret Words</span>
+            </div>
+            <input type="text" class="form-control" value="{{words_user}}" name="words_user" placeholder="Secret Words" aria-label="Secret Words" aria-describedby="basic-addon2" disabled>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon3">Hash</span>
+            </div>
+            <input type="text" class="form-control" value="{{hash_password_words}}" name="hash_password_words" placeholder="Hash" aria-label="Hash" aria-describedby="basic-addon3" disabled>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon4">Key</span>
+            </div>
+            <input type="text" class="form-control" value="{{key_fernet}}" name="hash_password_words" placeholder="Key" aria-label="Key" aria-describedby="basic-addon3" disabled>
+        </div>
+        <div>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                {% if editing == 'True' %}
+                    <button type="submit" class="btn btn-success">Save</button>
+                {% else %}
+                    <button type="submit" class="btn btn-warning">Edit</button>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+    <!--  FORM  -->
+</body>
+</html>
