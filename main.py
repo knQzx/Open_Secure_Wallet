@@ -1,4 +1,7 @@
+import os
 import random
+
+import qrcode
 from cryptography.fernet import Fernet
 from bitcoinaddress import Wallet
 import requests
@@ -9,6 +12,7 @@ import hashlib
 from address import main_key
 import address
 from api import db, app
+import secrets
 
 
 class Wallets(db.Model):  # => Wallets db
@@ -109,7 +113,34 @@ def wallet_info(WALLET):
         'nav-item nav-link active',
         'nav-item nav-link',
         'nav-item nav-link']
-    return render_template('separate_wallet.html', elements_nav=elements_nav, address_wallet=wallet['public_address'], wallet=wallet['wallet'], balances=wallet['balances'])
+    return render_template('separate_wallet.html', elements_nav=elements_nav, address_wallet=wallet['public_address'], wallet=wallet['wallet'], balances=wallet['balances'], address=address.address)
+
+
+@app.route('/get_btc/<WALLET>', methods=['GET', 'POST'])
+def get_btc(WALLET):
+    # create token for get access to qr-code
+    new_key = secrets.token_hex(10)
+    # wallet address
+    wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
+    # wallet
+    wallet_public_address = wallet['public_address']
+    # make qr-code
+    img = qrcode.make(f'bitcoin:{wallet_public_address}')
+    img.save(f"qr/{new_key}.png")
+    # upload to cloud service
+    with open(f"qr/{new_key}.png", "rb") as file:
+        url = "https://api.imgbb.com/1/upload"
+        payload = {
+            "key": '7fc9d9ef94adb806ff9d40319ddc8f8a',
+            "image": __import__('base64').b64encode(file.read()),
+        }
+        res = requests.post(url, payload)
+        elements_nav = [
+            'nav-item nav-link',
+            'nav-item nav-link active',
+            'nav-item nav-link',
+            'nav-item nav-link']
+        return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav, access='qr', src_url=res.json()['data']['url'], address=address.address), os.remove(f"qr/{new_key}.png")
 
 
 @app.route('/create_wallet', methods=['GET', 'POST'])
@@ -133,6 +164,31 @@ def create_wallet():
     db.session.commit()
     return redirect('/wallets')
 
+
+@app.route('/delete_wallet/<wallet>', methods=['GET', 'POST'])
+def delete_wallet(wallet):
+    wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{wallet}').json()
+    elements_nav = [
+        'nav-item nav-link',
+        'nav-item nav-link active',
+        'nav-item nav-link',
+        'nav-item nav-link']
+    if float(request.args.get('btc')) >= 0.000000012:
+        return render_template('separate_wallet.html', elements_nav=elements_nav, access='delete_or_no', address_wallet=wallet['public_address'], wallet=wallet['wallet'], balances=wallet['balances'], address=address.address)
+    else:
+        key_bytes = str(session['key_fernet']).encode()
+        f = Fernet(key_bytes)
+        list_wallets = {}
+        for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
+            # print((f.decrypt((el.wallet).encode())).decode())
+            # print(el.password_words)
+            list_wallets[(f.decrypt((el.wallet).encode()).decode())] = el.wallet
+        if wallet['wallet'] in list_wallets:
+            wallet_address_hash = (list_wallets[wallet['wallet']])
+            Wallets.query.filter_by(wallet=wallet_address_hash).delete()
+            # commit => save
+            db.session.commit()
+        return redirect('/wallets')
 
 
 @app.route('/settings', methods=['GET', 'POST'])
