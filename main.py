@@ -1,18 +1,15 @@
 import os
 import random
+import secrets
 
 import qrcode
-from cryptography.fernet import Fernet
-from bitcoinaddress import Wallet
 import requests
-from flask import Flask, render_template, request, redirect, session
-from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
-import hashlib
-from address import main_key
+from bitcoinaddress import Wallet
+from cryptography.fernet import Fernet
+from flask import render_template, request, redirect, session
+
 import address
 from api import db, app
-import secrets
 
 
 class Wallets(db.Model):  # => Wallets db
@@ -31,12 +28,13 @@ class Wallets(db.Model):  # => Wallets db
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     words = ['ежедневник', 'субботник', 'календарь', 'пузырь', 'леопард', 'сауна',
-            'режим', 'бензопила', 'созвездие', 'бутафория', 'барокко', 'аббревиатура',
+             'режим', 'бензопила', 'созвездие', 'бутафория', 'барокко', 'аббревиатура',
              'иллюстрация', 'переводчик', 'ириска', 'Фантастика', 'тхэквондо', 'радар',
              'акция', 'абонемент', 'солярий', 'аристократ', 'лавина', 'тир', 'венера',
              'марс', 'сила', 'море', 'океан', 'яндекс', 'гугл', 'глобус']
     words = '_'.join(random.sample(words, 24))
-    return render_template('registration.html', words=words, what='Registration', key_fernet=(Fernet.generate_key()).decode())
+    return render_template('registration.html', words=words, what='Registration',
+                           key_fernet=(Fernet.generate_key()).decode())
 
 
 @app.route('/registration_2/<words>/<key_fernet>', methods=['GET', 'POST'])
@@ -50,7 +48,8 @@ def registration_2(words, key_fernet):
 @app.route('/authentication', methods=['GET', 'POST'])
 def authentication():
     if request.method == 'POST':
-        return redirect(f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}')
+        return redirect(
+            f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}')
     return render_template('registration.html', what='Authentication')
 
 
@@ -70,8 +69,14 @@ def personal_account():
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
         print(request.method)
         if request.method == 'POST':
-            return render_template('personal_account.html', elements_nav=elements_nav, password_user=session['password'], words_user=session['words'], hash_password_words=session['hash_password_words'], key_fernet=session['key_fernet'], editing='True', action='/save')
-        return render_template('personal_account.html', elements_nav=elements_nav, password_user=session['password'], words_user=session['words'], hash_password_words=session['hash_password_words'], key_fernet=session['key_fernet'])
+            return render_template('personal_account.html', elements_nav=elements_nav,
+                                   password_user=session['password'], words_user=session['words'],
+                                   hash_password_words=session['hash_password_words'],
+                                   key_fernet=session['key_fernet'], editing='True', action='/save')
+        return render_template('personal_account.html', elements_nav=elements_nav,
+                               password_user=session['password'], words_user=session['words'],
+                               hash_password_words=session['hash_password_words'],
+                               key_fernet=session['key_fernet'])
     else:
         return redirect('/authentication')
 
@@ -113,7 +118,9 @@ def wallet_info(WALLET):
         'nav-item nav-link active',
         'nav-item nav-link',
         'nav-item nav-link']
-    return render_template('separate_wallet.html', elements_nav=elements_nav, address_wallet=wallet['public_address'], wallet=wallet['wallet'], balances=wallet['balances'], address=address.address)
+    return render_template('separate_wallet.html', elements_nav=elements_nav,
+                           address_wallet=wallet['public_address'], wallet=wallet['wallet'],
+                           balances=wallet['balances'], address=address.address)
 
 
 @app.route('/get_btc/<WALLET>', methods=['GET', 'POST'])
@@ -140,7 +147,9 @@ def get_btc(WALLET):
             'nav-item nav-link active',
             'nav-item nav-link',
             'nav-item nav-link']
-        return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav, access='qr', src_url=res.json()['data']['url'], address=address.address), os.remove(f"qr/{new_key}.png")
+        return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav,
+                               access='qr', src_url=res.json()['data']['url'],
+                               address=address.address), os.remove(f"qr/{new_key}.png")
 
 
 @app.route('/create_wallet', methods=['GET', 'POST'])
@@ -174,7 +183,10 @@ def delete_wallet(wallet):
         'nav-item nav-link',
         'nav-item nav-link']
     if float(request.args.get('btc')) >= 0.000000012:
-        return render_template('separate_wallet.html', elements_nav=elements_nav, access='delete_or_no', address_wallet=wallet['public_address'], wallet=wallet['wallet'], balances=wallet['balances'], address=address.address)
+        return render_template('separate_wallet.html', elements_nav=elements_nav,
+                               access='delete_or_no', address_wallet=wallet['public_address'],
+                               wallet=wallet['wallet'], balances=wallet['balances'],
+                               address=address.address)
     else:
         key_bytes = str(session['key_fernet']).encode()
         f = Fernet(key_bytes)
