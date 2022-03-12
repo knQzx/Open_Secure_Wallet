@@ -132,24 +132,15 @@ def get_btc(WALLET):
     # wallet
     wallet_public_address = wallet['public_address']
     # make qr-code
-    img = qrcode.make(f'bitcoin:{wallet_public_address}')
-    img.save(f"qr/{new_key}.png")
-    # upload to cloud service
-    with open(f"qr/{new_key}.png", "rb") as file:
-        url = "https://api.imgbb.com/1/upload"
-        payload = {
-            "key": '7fc9d9ef94adb806ff9d40319ddc8f8a',
-            "image": __import__('base64').b64encode(file.read()),
-        }
-        res = requests.post(url, payload)
-        elements_nav = [
-            'nav-item nav-link',
-            'nav-item nav-link active',
-            'nav-item nav-link',
-            'nav-item nav-link']
-        return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav,
-                               access='qr', src_url=res.json()['data']['url'],
-                               address=address.address), os.remove(f"qr/{new_key}.png")
+    elements_nav = [
+        'nav-item nav-link',
+        'nav-item nav-link active',
+        'nav-item nav-link',
+        'nav-item nav-link']
+    return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav,
+                           access='qr',
+                           src_url=f'https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:{wallet_public_address}&amp',
+                           address=address.address)
 
 
 @app.route('/create_wallet', methods=['GET', 'POST'])
