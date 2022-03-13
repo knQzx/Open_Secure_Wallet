@@ -21,13 +21,8 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" href="https://tinyurl.com/yavauxw5">
+    <link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
     <title>Wallets</title>
-    <style>
-        .card {
-            width:  500px;
-            margin: 0 auto;
-        }
-    </style>
 </head>
 <body>
     <!-- NAVIGATION  -->
@@ -52,7 +47,9 @@
         </div>
         <ul class="list-group list-group-flush">
             {% for el in list_wallets %}
-                <li class="list-group-item"><a href="/wallet/{{el}}" class="card-link"><button type="button" class="btn btn-dark">Wallet # <span>{{ list_wallets.index(el) + 1}}</span></button></a></li>
+                <li class="list-group-item"><a href="/wallet/{{el}}" class="card-link">
+                    <button type="button" class="btn six">Wallet # <span>{{ list_wallets.index(el) + 1}}</span></button>
+                </a></li>
             {% endfor %}
         </ul>
         <div class="card-body">

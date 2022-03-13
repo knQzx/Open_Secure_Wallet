@@ -1,0 +1,65 @@
+.fourth {
+  border-color: #62bd7d;
+  color: #292929;
+  background-image: -webkit-linear-gradient(45deg, #62bd7d 50%, transparent 50%);
+  background-image: linear-gradient(45deg, #62bd7d 50%, transparent 50%);
+  background-position: 100%;
+  background-size: 400%;
+  -webkit-transition: background 300ms ease-in-out;
+  transition: background 300ms ease-in-out;
+}
+.fourth:hover {
+  background-position: 0;
+}
+
+.six {
+  border-color: #2e3333;
+  border-radius: 0;
+  color: #2e3333;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border-radius: 5px;
+  -webkit-transition: color 150ms ease-in-out;
+  transition: color 150ms ease-in-out;
+}
+.six:after {
+  content: '';
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  width: 0;
+  height: 100%;
+  background: #2e3333;
+  z-index: -1;
+  -webkit-transition: width 150ms ease-in-out;
+  transition: width 150ms ease-in-out;
+}
+.six:hover {
+  color: #fff;
+}
+.six:hover:after {
+  width: 110%;
+}
+
+.card {
+    width:  500px;
+    margin: 0 auto;
+}
+
+.fifth {
+  border-color: #dfe305;
+  color: #292929;
+  background-image: -webkit-linear-gradient(45deg, #dfe305 50%, transparent 50%);
+  background-image: linear-gradient(45deg, #dfe305 50%, transparent 50%);
+  background-position: 100%;
+  background-size: 400%;
+  -webkit-transition: background 300ms ease-in-out;
+  transition: background 300ms ease-in-out;
+}
+.fifth:hover {
+  background-position: 0;
+}

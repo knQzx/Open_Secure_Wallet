@@ -19,15 +19,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" href="https://tinyurl.com/yavauxw5">
-    <title>Wallets</title>
-    <style>
-        .card {
-            width:  500px;
-            margin: 0 auto;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
+    <title>Wallet Info</title>
 </head>
 <body>
     <!-- NAVIGATION  -->
@@ -40,47 +37,56 @@
     <!-- NAVIGATION  -->
     <!--  CARD BTC  -->
     {% if access == 'qr' %}
-        <a href="/wallet/{{wallet}}" class="badge badge-danger" style="width: 20rem;position: relative; left: 50%; transform: translate(-50%, 0);">Back</a>
+    <a href="/wallet/{{decode_wallet}}" class="badge badge-danger"
+       style="width: 20rem;position: relative; left: 50%; transform: translate(-50%, 0);">Back</a>
     {% else %}
-        <a href="/wallets" class="badge badge-danger" style="width: 20rem;position: relative; left: 50%; transform: translate(-50%, 0);">Back</a>
+    <a href="/wallets" class="badge badge-danger"
+       style="width: 20rem;position: relative; left: 50%; transform: translate(-50%, 0);">Back</a>
     {% endif %}
     <div class="card" style="width: 20rem;">
         {% if access == 'qr' %}
-            <img src="{{src_url}}" alt="">
+        <img src="{{src_url}}" alt="">
         {% else %}
-            <div class="card-body">
-                <div style="text-align: center" class="alert alert-dark" role="alert">
-                    BTC: {{address_wallet}}
-                </div>
-                <p class="card-text">This is a peer-to-peer payment system that uses the unit of the same name to account for transactions.</p>
+        <div class="card-body">
+            <div style="text-align: center" class="alert alert-dark" role="alert">
+                BTC: {{address_wallet}}
             </div>
-            {% if access == 'delete_or_no' %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>ERROR!</strong> First you need to withdraw all the money from your wallet!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endif %}
-            <div class="card-header">
-                In monetary terms
-            </div>
-            <ul class="list-group list-group-flush">
-                <li id="1" class="list-group-item">
-                    BTC: {{balances['btc']}}
-                </li>
-                <li id="2" class="list-group-item">
-                    USD: {{balances['usd']}}
-                </li>
-                <li id="3" class="list-group-item">
-                    EUR: {{balances['eur']}}
-                </li>
-            </ul>
-            <div style="display: flex; justify-content: space-evenly;" class="card-body">
-                <a href="/send_btc/{{wallet}}" class="card-link"><button type="button" class="btn btn-warning">Send BTC</button></a>&nbsp;
-                <a href="/get_btc/{{wallet}}" class="card-link"><button type="button" class="btn btn-success">Get BTC</button></a>
-            </div>
-            <a href="/delete_wallet/{{wallet}}?btc={{balances['btc']}}" class="badge badge-danger" style="width: 20rem; position: relative; left: 50%; transform: translate(-50%, 0);">delete wallet</a>
+            <p class="card-text">This is a peer-to-peer payment system that uses the unit of the same
+                name to account for transactions.</p>
+        </div>
+        {% if access == 'delete_or_no' %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>ERROR!</strong> First you need to withdraw all the money from your wallet!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        <div class="card-header">
+            In monetary terms
+        </div>
+        <ul class="list-group list-group-flush">
+            <li id="1" class="list-group-item">
+                BTC: {{balances['btc']}}
+            </li>
+            <li id="2" class="list-group-item">
+                USD: {{balances['usd']}}
+            </li>
+            <li id="3" class="list-group-item">
+                EUR: {{balances['eur']}}
+            </li>
+        </ul>
+        <div style="display: flex; justify-content: space-evenly;" class="card-body">
+            <a href="/send_btc/{{wallet}}" class="card-link">
+                <button type="button" class="btn fifth">Send BTC</button>
+            </a>&nbsp;
+            <a href="/get_btc/{{decode_wallet}}" class="card-link">
+                <button type="button" class="btn fourth">Get BTC</button>
+            </a>
+        </div>
+        <a href="/delete_wallet/{{wallet}}?btc={{balances['btc']}}" class="badge badge-danger"
+           style="width: 20rem; position: relative; left: 50%; transform: translate(-50%, 0);">delete
+            wallet</a>
         {% endif %}
     </div>
     <!--  CARD BTC  -->

@@ -1,8 +1,5 @@
-import os
 import random
-import secrets
 
-import qrcode
 import requests
 from bitcoinaddress import Wallet
 from cryptography.fernet import Fernet
@@ -103,7 +100,7 @@ def wallets():
         for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
             # print((f.decrypt((el.wallet).encode())).decode())
             # print(el.password_words)
-            list_wallets.append(f.decrypt((el.wallet).encode()).decode())
+            list_wallets.append(el.wallet)
         return render_template('wallets.html', elements_nav=elements_nav, list_wallets=list_wallets)
     else:
         return redirect('/authentication')
@@ -111,6 +108,15 @@ def wallets():
 
 @app.route('/wallet/<WALLET>', methods=['GET', 'POST'])
 def wallet_info(WALLET):
+    #
+    db.create_all()
+    key_bytes = str(session['key_fernet']).encode()
+    f = Fernet(key_bytes)
+    #
+    decode_wallet = WALLET
+    print(decode_wallet)
+    #
+    WALLET = f.decrypt((WALLET).encode()).decode()
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
     print(wallet)
     elements_nav = [
@@ -120,13 +126,18 @@ def wallet_info(WALLET):
         'nav-item nav-link']
     return render_template('separate_wallet.html', elements_nav=elements_nav,
                            address_wallet=wallet['public_address'], wallet=wallet['wallet'],
-                           balances=wallet['balances'], address=address.address)
+                           decode_wallet=decode_wallet, balances=wallet['balances'],
+                           address=address.address)
 
 
-@app.route('/get_btc/<WALLET>', methods=['GET', 'POST'])
-def get_btc(WALLET):
-    # create token for get access to qr-code
-    new_key = secrets.token_hex(10)
+@app.route('/get_btc/<DECODE_WALLET>', methods=['GET', 'POST'])
+def get_btc(DECODE_WALLET):
+    # key bytes fernet key
+    db.create_all()
+    key_bytes = str(session['key_fernet']).encode()
+    f = Fernet(key_bytes)
+    #
+    WALLET = f.decrypt((DECODE_WALLET).encode()).decode()
     # wallet address
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
     # wallet
@@ -138,7 +149,7 @@ def get_btc(WALLET):
         'nav-item nav-link',
         'nav-item nav-link']
     return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav,
-                           access='qr',
+                           access='qr', decode_wallet=DECODE_WALLET,
                            src_url=f'https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:{wallet_public_address}&amp',
                            address=address.address)
 
