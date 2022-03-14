@@ -21,6 +21,7 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" href="https://tinyurl.com/yavauxw5">
+    <link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
     <title>Personal Account</title>
     <style>
         form.account_form {
@@ -31,6 +32,9 @@
             border: 1px solid gray;
             border-radius: 5px;
             padding: 10px;
+        }
+        body {
+          background: url(https://html5book.ru/wp-content/uploads/2015/07/background39.png);
         }
     </style>
 </head>
@@ -77,9 +81,9 @@
         <div>
             <div class="btn-group" role="group" aria-label="Basic example">
                 {% if editing == 'True' %}
-                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="submit" class="save-button">Save</button>
                 {% else %}
-                    <button type="submit" class="btn btn-warning">Edit</button>
+                    <button type="submit" class="edit-button">Edit</button>
                 {% endif %}
             </div>
         </div>
