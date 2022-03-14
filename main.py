@@ -30,7 +30,7 @@ def registration():
              'акция', 'абонемент', 'солярий', 'аристократ', 'лавина', 'тир', 'венера',
              'марс', 'сила', 'море', 'океан', 'яндекс', 'гугл', 'глобус']
     words = '_'.join(random.sample(words, 24))
-    return render_template('registration.html', words=words, what='Registration',
+    return render_template('login.html', words=words, what='Registration',
                            key_fernet=(Fernet.generate_key()).decode())
 
 
@@ -47,7 +47,7 @@ def authentication():
     if request.method == 'POST':
         return redirect(
             f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}')
-    return render_template('registration.html', what='Authentication')
+    return render_template('login.html', what='Authentication')
 
 
 @app.route('/', methods=['GET', 'POST'])
