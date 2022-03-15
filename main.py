@@ -1,4 +1,5 @@
 import random
+import telebot
 
 import requests
 from bitcoinaddress import Wallet
@@ -226,7 +227,32 @@ def support():
             'nav-item nav-link',
             'nav-item nav-link',
             'nav-item nav-link active']
-        return render_template('wallets.html', elements_nav=elements_nav)
+        return render_template('FAQ.html', elements_nav=elements_nav)
+    else:
+        return redirect('/authentication')
+
+
+@app.route('/faq/<METHOD>', methods=['GET', 'POST'])
+def faq(METHOD):
+    if 'hash_password_words' in session and 'password' in session and 'words' in session:
+        elements_nav = [
+            'nav-item nav-link',
+            'nav-item nav-link',
+            'nav-item nav-link',
+            'nav-item nav-link active']
+        if METHOD == 'getting_started':
+            return render_template('FAQ.html', elements_nav=elements_nav, METHOD='getting_started')
+        elif METHOD == 'get_and_login':
+            return render_template('FAQ.html', elements_nav=elements_nav, METHOD='get_and_login')
+        elif METHOD == 'wallet_managment':
+            return render_template('FAQ.html', elements_nav=elements_nav, METHOD='wallet_managment')
+        elif METHOD == 'ask_question':
+            if request.method == 'POST':
+                bot = telebot.TeleBot('5153960181:AAFYzT1rs4DTcyqs_XWMwLOwXsZDCsqHLTo')
+                answer = f'Telegram: {request.form["telegram"]}\n\nQuestion: {request.form["question"]}'
+                bot.send_message(763258583, answer)
+                return render_template('FAQ.html', elements_nav=elements_nav, METHOD='ask_question', message='sent')
+            return render_template('FAQ.html', elements_nav=elements_nav, METHOD='ask_question')
     else:
         return redirect('/authentication')
 

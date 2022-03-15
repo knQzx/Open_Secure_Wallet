@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="https://tinyurl.com/yavauxw5">
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="https://tinyurl.com/yavauxw5"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='vendor/bootstrap/css/bootstrap.min.css', v=1)}}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='fonts/font-awesome-4.7.0/css/font-awesome.min.css', v=1)}}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='vendor/animate/animate.css', v=1)}}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='vendor/css-hamburgers/hamburgers.min.css', v=1)}}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='vendor/select2/select2.min.css', v=1)}}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/util.css', v=1)}}">
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/main.css', v=1)}}">
+<!--===============================================================================================-->
+    <title>FAQ</title>
+</head>
+<body>
+    <!-- NAVIGATION  -->
+    <nav class="nav nav-pills nav-fill">
+        <a class="{{ elements_nav[0] }}" href="/personal_account">Personal Account</a>
+        <a class="{{ elements_nav[1] }}" href="/wallets">Wallets</a>
+        <a class="{{ elements_nav[2] }}" href="/settings">Settings</a>
+        <a class="{{ elements_nav[3] }}" href="/support">FAQ</a>
+    </nav>
+    <!-- NAVIGATION  -->
+    <div class="container">
+        <div class="row">
+            <div class="col-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page"><a style="text-decoration: none;" href="/faq/getting_started">1. Getting started</a></li><br>
+                        <li class="breadcrumb-item active" aria-current="page"><a style="text-decoration: none;" href="/faq/get_and_login">2. Registration and Authentication</a></li><br>
+                        <li class="breadcrumb-item active" aria-current="page"><a style="text-decoration: none;" href="/faq/wallet_managment">3. Wallet Management</a></li><br>
+                        <li class="breadcrumb-item active" aria-current="page"><a style="text-decoration: none;" href="/faq/ask_question">4. Ask the administrator a question</a></li><br>
+                    </ol>
+                </nav>
+
+          </div>
+          <div class="col-8">
+              <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                          {% if METHOD == 'getting_started' %}
+                            <h1>What is this project created for?</h1><br>
+                            <p>Create a private and secure wallet for crypto currencies</p><br><br>
+                            <h1>Why did I do it, because there are analogues?</h1><br>
+                            <p>It all started with the fact that I needed to have several crypto wallets, and I also wanted to remain completely anonymous. They asked for confirmation mail everywhere, and it was also impossible to create more than 1 wallet, and that's how it all started.</p><br><br>
+                            <h1>Who was the project created for?</h1><br>
+                            <p>Entrepreneurs, individuals who want to move into a new era - the era of crypto currencies.</p><br><br>
+                          {% elif METHOD == 'get_and_login' %}
+                            <h1>Authentication</h1><br>
+                            <p>On my site, you need to <a href="/authentication">authentication</a> first. If you have not done this, all its functions will be unavailable to you.</p><br><br>
+                            <h1>Registration</h1><br>
+                            <p>If you can't log in, then I think you need to <a href="/registration">register</a> first. Registration only asks you for a password, which will be used in future transactions with wallets.</p><br><br>
+                          {% elif METHOD == 'wallet_managment' %}
+                            <h1>Creating crypto wallets</h1><br>
+                            <p>If you need to create a wallet, then you need to click on the - create wallet button in the wallets tab. Then you will have a new wallet in the list below and you will be able to use it.</p><br><br>
+                            <h1>Removing Crypto Wallets</h1><br>
+                            <p>If you need to delete a wallet, then first you need to withdraw money from it, and only then you can delete it.</p><br><br>
+                          {% elif METHOD == 'ask_question' %}
+                                <div class="limiter">
+	                            	<div class="container-login100">
+	                            		<div class="wrap-login100">
+	                            			<div class="login100-pic js-tilt" data-tilt>
+	                            				<img src="https://tinyurl.com/yavauxw5" alt="IMG">
+	                            			</div>
+	                            			<form class="login100-form validate-form" method="post" action="/faq/ask_question">
+	                            				<span class="login100-form-title">
+	                            					Ask a question
+	                            				</span>
+                                                {% if message == 'sent' %}
+                                                    <div class="alert alert-warning" role="alert">
+                                                      SENT!
+                                                    </div>
+                                                {% endif %}
+                                                <input class="input100" type="text" name="question" placeholder="Question" required><br>
+
+	                            				<div class="wrap-input100 validate-input">
+	                            					<input class="input100" type="text" name="telegram" placeholder="Telegram" required>
+	                            					<span class="focus-input100"></span>
+	                            					<span class="symbol-input100">
+	                            						<i class="fa fa-telegram" aria-hidden="true"></i>
+	                            					</span>
+	                            				</div>
+
+	                            				<div class="container-login100-form-btn">
+	                            					<button type="submit" class="login100-form-btn">
+	                            						Ask a question
+	                            					</button>
+	                            				</div>
+
+	                            			</form>
+	                            		</div>
+	                            	</div>
+	                            </div>
+                          {% endif %}
+                      </li>
+                  </ol>
+              </nav>
+          </div>
+        </div>
+    </div>
+</body>
+</html>
