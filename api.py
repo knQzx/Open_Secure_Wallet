@@ -97,14 +97,18 @@ class Get_Wallet_Info(Resource):
         return jsonify({'wallet': WALLET, 'public_address': public_address,
                         'balances': {'usd': usd_balance, 'eur': eur_balance, 'btc': btc_balance}})
 
-    
-class Update_User_Settings(Resource):
-    def get(self, PASSWORD, WORDS, key_fernet, what_to_see):
-        return redirect(f'/update_user_settings/<PASSWORD>/<WORDS>/<key_fernet>&what_to_see={what_to_see}')
+
+class Update_Password(Resource):
+    def get(self, password_start, secretWords, key, new_password):
+        print(password_start, secretWords, key, new_password)
+        return jsonify({'password_start': password_start})
+
 
 api.add_resource(Registration, '/todo/api/v1.0/registration/<PASSWORD>/<WORDS>/<key_fernet>',
                  endpoint='registration_1')
 api.add_resource(Authentication, '/todo/api/v1.0/authentication/<PASSWORD>/<WORDS>/<key_fernet>',
                  endpoint='authentication_2')
 api.add_resource(Get_Wallet_Info, '/todo/api/v1.0/get_wallet/<WALLET>', endpoint='wallet_2')
-api.add_resource(Update_User_Settings, '/todo/api/v1.0/update_settings/<PASSWORD>/<WORDS>/<key_fernet>/<what_to_see>', endpoint='update_2')
+api.add_resource(Update_Password,
+                 '/todo/api/v1.0/update_password/<password_start>/<secretWords>/<key>/<new_password>',
+                 endpoint='password_2')

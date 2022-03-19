@@ -35,7 +35,7 @@
             console.log(`${window.location.origin}/?value_target=${event.target.value}`);
             httpRequest = new XMLHttpRequest();
             httpRequest.overrideMimeType('text/xml');
-            httpRequest.open('GET', `${window.location.origin}/?value_target=${event.target.value}`, true);
+            httpRequest.open('GET', `${window.location.origin}/todo/api/v1.0/update_settings/{{password}}/<WORDS>/<key_fernet>/${event.target.value}`, true);
             httpRequest.send(null);
         };
     </script>

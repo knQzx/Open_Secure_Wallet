@@ -31,8 +31,7 @@
     <nav class="nav nav-pills nav-fill">
         <a class="{{ elements_nav[0] }}" href="/personal_account">Personal Account</a>
         <a class="{{ elements_nav[1] }}" href="/wallets">Wallets</a>
-        <a class="{{ elements_nav[2] }}" href="/settings">Settings</a>
-        <a class="{{ elements_nav[3] }}" href="/support">FAQ</a>
+        <a class="{{ elements_nav[2] }}" href="/support">FAQ</a>
     </nav>
     <!-- NAVIGATION  -->
     <!--  CARD BTC  -->
@@ -77,7 +76,7 @@
             </li>
         </ul>
         <div style="display: flex; justify-content: space-evenly;" class="card-body">
-            <a href="/send_btc/{{wallet}}" class="card-link">
+            <a href="/send_btc/{{decode_wallet}}" class="card-link">
                 <button type="button" class="btn fifth">Send BTC</button>
             </a>&nbsp;
             <a href="/get_btc/{{decode_wallet}}" class="card-link">

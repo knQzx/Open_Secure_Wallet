@@ -1,13 +1,15 @@
+import hashlib
 import random
-import telebot
 
 import requests
+import telebot
+from bit import Key
 from bitcoinaddress import Wallet
 from cryptography.fernet import Fernet
 from flask import render_template, request, redirect, session
 
 import address
-from api import db, app
+from api import db, app, Users
 
 
 class Wallets(db.Model):  # => Wallets db
@@ -22,7 +24,6 @@ class Wallets(db.Model):  # => Wallets db
         return f'<{self.id}>'
 
 
-# TODO: registration
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     words = ['ежедневник', 'субботник', 'календарь', 'пузырь', 'леопард', 'сауна',
@@ -42,12 +43,11 @@ def registration_2(words, key_fernet):
     return redirect(f'/todo/api/v1.0/registration/{request.form["password"]}/{words}/{key_fernet}')
 
 
-# TODO: authentication
 @app.route('/authentication', methods=['GET', 'POST'])
 def authentication():
+    red = f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}'
     if request.method == 'POST':
-        return redirect(
-            f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}')
+        return redirect(red)
     return render_template('login.html', what='Authentication')
 
 
@@ -58,14 +58,11 @@ def index():
 
 @app.route('/personal_account', methods=['GET', 'POST'])
 def personal_account():
-    print(session)
     elements_nav = [
         'nav-item nav-link active',
         'nav-item nav-link',
-        'nav-item nav-link',
         'nav-item nav-link']
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
-        print(request.method)
         if request.method == 'POST':
             return render_template('personal_account.html', elements_nav=elements_nav,
                                    password_user=session['password'], words_user=session['words'],
@@ -79,11 +76,34 @@ def personal_account():
         return redirect('/authentication')
 
 
-@app.route('/personal_account/save', methods=['GET', 'POST'])
-def personal_account_save():
-    if request.method == 'POST':
-        print(session)
-        return redirect('/personal_account')
+@app.route('/update_password/<password_start>/<secretWords>/<key>/<new_password>')
+def update_password(password_start, secretWords, key, new_password):
+    # create tables
+    db.create_all()
+    # old_values
+    old_hash_password = f"{hashlib.md5(str(password_start).encode()).hexdigest()}"
+    old_hash_words = f"{hashlib.md5(f'{secretWords}{old_hash_password}'.encode()).hexdigest()}"
+    model = Users.query.filter_by(password=old_hash_password, words=old_hash_words).first()
+    # make new values and to db
+    # make new hash_password
+    hash_password = f"{hashlib.md5(str(new_password).encode()).hexdigest()}"
+    # make hash_words
+    hash_words = f"{hashlib.md5(f'{secretWords}{hash_password}'.encode()).hexdigest()}"
+    # make hash_password_words
+    hash_password_words = f"{hashlib.md5(f'{hash_password}{hash_words}'.encode()).hexdigest()}"
+    # make hash_key
+    hash_key = f"{hashlib.md5(f'{hash_password}{key}'.encode()).hexdigest()}"
+    model.password = hash_password
+    model.words = hash_words
+    model.key_fernet = hash_key
+    model.password_words = hash_password_words
+    # edit session data
+    session['password'] = new_password
+    session['words'] = secretWords
+    session['hash_password_words'] = hash_password_words
+    session['key_fernet'] = key
+    db.session.commit()
+    return redirect('/personal_account')
 
 
 @app.route('/wallets', methods=['GET', 'POST'])
@@ -92,15 +112,10 @@ def wallets():
         elements_nav = [
             'nav-item nav-link',
             'nav-item nav-link active',
-            'nav-item nav-link',
             'nav-item nav-link']
         db.create_all()
-        key_bytes = str(session['key_fernet']).encode()
-        f = Fernet(key_bytes)
         list_wallets = []
         for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
-            # print((f.decrypt((el.wallet).encode())).decode())
-            # print(el.password_words)
             list_wallets.append(el.wallet)
         return render_template('wallets.html', elements_nav=elements_nav, list_wallets=list_wallets)
     else:
@@ -109,21 +124,18 @@ def wallets():
 
 @app.route('/wallet/<WALLET>', methods=['GET', 'POST'])
 def wallet_info(WALLET):
-    #
+    # db create all
     db.create_all()
     key_bytes = str(session['key_fernet']).encode()
     f = Fernet(key_bytes)
-    #
+    # decode_wallet
     decode_wallet = WALLET
-    print(decode_wallet)
-    #
-    WALLET = f.decrypt((WALLET).encode()).decode()
+    # WALLET decrypt
+    WALLET = f.decrypt(WALLET.encode()).decode()
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
-    print(wallet)
     elements_nav = [
         'nav-item nav-link',
         'nav-item nav-link active',
-        'nav-item nav-link',
         'nav-item nav-link']
     return render_template('separate_wallet.html', elements_nav=elements_nav,
                            address_wallet=wallet['public_address'], wallet=wallet['wallet'],
@@ -138,7 +150,7 @@ def get_btc(DECODE_WALLET):
     key_bytes = str(session['key_fernet']).encode()
     f = Fernet(key_bytes)
     #
-    WALLET = f.decrypt((DECODE_WALLET).encode()).decode()
+    WALLET = f.decrypt(DECODE_WALLET.encode()).decode()
     # wallet address
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
     # wallet
@@ -147,12 +159,72 @@ def get_btc(DECODE_WALLET):
     elements_nav = [
         'nav-item nav-link',
         'nav-item nav-link active',
-        'nav-item nav-link',
         'nav-item nav-link']
+    href = f'https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:{wallet_public_address}&amp'
     return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav,
                            access='qr', decode_wallet=DECODE_WALLET,
-                           src_url=f'https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:{wallet_public_address}&amp',
+                           src_url=href,
                            address=address.address)
+
+
+@app.route('/send_btc/<DECODE_WALLET>', methods=['GET', 'POST'])
+def send_btc(DECODE_WALLET):
+    if request.method == 'POST':
+        # address to send
+        address_to_send = request.form['address_to_send']
+        # how much to send
+        how_much = request.form['quantity']
+        # key bytes fernet key
+        db.create_all()
+        key_bytes = str(session['key_fernet']).encode()
+        f = Fernet(key_bytes)
+        WALLET = f.decrypt(DECODE_WALLET.encode()).decode()
+        # wallet address
+        wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
+        # wallet_balance
+        wallet_balance = wallet['balances']['btc']
+        # nav bar
+        elements_nav = [
+            'nav-item nav-link',
+            'nav-item nav-link active',
+            'nav-item nav-link']
+        if float(wallet_balance) < float(request.form['quantity']):
+            return render_template('send_wallet.html', from_send=wallet['wallet'], wallet=WALLET,
+                                   elements_nav=elements_nav, balances=wallet['balances'],
+                                   decode_wallet=DECODE_WALLET, address=address.address,
+                                   error='Not enough funds')
+        elif float(wallet_balance) >= float(request.form['quantity']):
+            wallet_2 = Wallet(WALLET)
+            my_key = Key(wallet_2.testnet)
+            try:
+                my_key.send([(address_to_send, float(how_much), 'btc')])
+                return render_template('send_wallet.html', from_send=wallet['wallet'],
+                                       wallet=WALLET,
+                                       elements_nav=elements_nav, balances=wallet['balances'],
+                                       decode_wallet=DECODE_WALLET, address=address.address,
+                                       error='SUCCESS!')
+            except BaseException:
+                return render_template('send_wallet.html', from_send=wallet['wallet'],
+                                       wallet=WALLET,
+                                       elements_nav=elements_nav, balances=wallet['balances'],
+                                       decode_wallet=DECODE_WALLET, address=address.address,
+                                       error='Transactions must have at least one unspent.')
+    # key bytes fernet key
+    db.create_all()
+    key_bytes = str(session['key_fernet']).encode()
+    f = Fernet(key_bytes)
+    # decrypt wallet
+    WALLET = f.decrypt(DECODE_WALLET.encode()).decode()
+    # wallet address
+    wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
+    # nav bar
+    elements_nav = [
+        'nav-item nav-link',
+        'nav-item nav-link active',
+        'nav-item nav-link']
+    return render_template('send_wallet.html', from_send=wallet['wallet'], wallet=WALLET,
+                           elements_nav=elements_nav, balances=wallet['balances'],
+                           access='qr', decode_wallet=DECODE_WALLET, address=address.address)
 
 
 @app.route('/create_wallet', methods=['GET', 'POST'])
@@ -183,7 +255,6 @@ def delete_wallet(wallet):
     elements_nav = [
         'nav-item nav-link',
         'nav-item nav-link active',
-        'nav-item nav-link',
         'nav-item nav-link']
     if float(request.args.get('btc')) >= 0.000000012:
         return render_template('separate_wallet.html', elements_nav=elements_nav,
@@ -195,8 +266,6 @@ def delete_wallet(wallet):
         f = Fernet(key_bytes)
         list_wallets = {}
         for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
-            # print((f.decrypt((el.wallet).encode())).decode())
-            # print(el.password_words)
             list_wallets[(f.decrypt((el.wallet).encode()).decode())] = el.wallet
         if wallet['wallet'] in list_wallets:
             wallet_address_hash = (list_wallets[wallet['wallet']])
@@ -206,28 +275,14 @@ def delete_wallet(wallet):
         return redirect('/wallets')
 
 
-@app.route('/settings', methods=['GET', 'POST'])
-def settings():
-    if 'hash_password_words' in session and 'password' in session and 'words' in session:
-        elements_nav = [
-            'nav-item nav-link',
-            'nav-item nav-link',
-            'nav-item nav-link active',
-            'nav-item nav-link']
-        return render_template('wallets.html', elements_nav=elements_nav)
-    else:
-        return redirect('/authentication')
-
-
 @app.route('/support', methods=['GET', 'POST'])
 def support():
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
         elements_nav = [
             'nav-item nav-link',
             'nav-item nav-link',
-            'nav-item nav-link',
             'nav-item nav-link active']
-        return render_template('FAQ.html', elements_nav=elements_nav)
+        return redirect('/faq/getting_started')
     else:
         return redirect('/authentication')
 
@@ -236,7 +291,6 @@ def support():
 def faq(METHOD):
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
         elements_nav = [
-            'nav-item nav-link',
             'nav-item nav-link',
             'nav-item nav-link',
             'nav-item nav-link active']
@@ -251,7 +305,8 @@ def faq(METHOD):
                 bot = telebot.TeleBot('5153960181:AAFYzT1rs4DTcyqs_XWMwLOwXsZDCsqHLTo')
                 answer = f'Telegram: {request.form["telegram"]}\n\nQuestion: {request.form["question"]}'
                 bot.send_message(763258583, answer)
-                return render_template('FAQ.html', elements_nav=elements_nav, METHOD='ask_question', message='sent')
+                return render_template('FAQ.html', elements_nav=elements_nav, METHOD='ask_question',
+                                       message='sent')
             return render_template('FAQ.html', elements_nav=elements_nav, METHOD='ask_question')
     else:
         return redirect('/authentication')

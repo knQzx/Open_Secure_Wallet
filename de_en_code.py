@@ -1,5 +1,4 @@
 from bitcoinaddress import Wallet
-from bit import Key
 import hashlib
 from cryptography.fernet import Fernet
 
