@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" href="https://tinyurl.com/yavauxw5">
+    <link rel="stylesheet" type="text/css"
+          href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
+    <title>Wallet Info</title>
+</head>
+<body>
+    <!-- NAVIGATION  -->
+    <nav class="nav nav-pills nav-fill">
+        <a class="{{ elements_nav[0] }}" href="/personal_account">Personal Account</a>
+        <a class="{{ elements_nav[1] }}" href="/wallets">Wallets</a>
+        <a class="{{ elements_nav[2] }}" href="/support">FAQ</a>
+    </nav>
+    <!-- NAVIGATION  -->
+    <!--  CARD BTC  -->
+    <a href="/wallet/{{decode_wallet}}" class="badge badge-danger"
+       style="width: 20rem;position: relative; left: 50%; transform: translate(-50%, 0);">Back</a>
+    <form action="/send_btc/{{decode_wallet}}" method="POST">
+        <div class="card" style="width: 20rem;">
+            <div class="card-header">
+                Balance
+            </div>
+            <ul class="list-group list-group-flush">
+                <li id="1" class="list-group-item">
+                     <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">₿</span>
+                        </div>
+                        <input type="text" name="my_wallet_value" id="btc_value" value="{{balances['btc']}}" disabled>
+                    </div>
+                </li>
+            </ul>
+            <br>
+            <div class="card-header">
+                <div style="text-align: center" class="alert alert-dark" role="alert">
+                    <input class="form-control" type="number" id="quantity" name="quantity" min="0.001" max="5" step="0.001" style="border-radius: 5%;" required>
+                    <p class="card-text">Enter the amount of cryptocurrency, from 0.001 to 5.</p>
+                </div>
+            </div>
+            {% if error == 'Not enough funds' %}
+                    <div class="alert alert-danger" role="alert">Not enough funds</div>
+            {% elif error == 'Transactions must have at least one unspent.' %}
+                    <div class="alert alert-danger" role="alert">Transactions must have at least one unspent.</div>
+            {% elif error == 'SUCCESS!' %}
+                    <div class="alert alert-success" role="alert">SUCCESS!</div>
+            {% endif %}
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon3">Address</span>
+                </div>
+                <input type="text" class="form-control" name="address_to_send" id="basic-url" aria-describedby="basic-addon3" required>
+            </div>
+            <button type="submit" class="btn btn-success">Send BTC</button>
+        </div>
+    </form>
+    <!--  CARD BTC  -->
+</body>
+</html>
