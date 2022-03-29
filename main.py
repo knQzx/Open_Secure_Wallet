@@ -24,6 +24,7 @@ class Wallets(db.Model):  # => Wallets db
         return f'<{self.id}>'
 
 
+# TODO: registration
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     words = ['ежедневник', 'субботник', 'календарь', 'пузырь', 'леопард', 'сауна',
@@ -43,11 +44,12 @@ def registration_2(words, key_fernet):
     return redirect(f'/todo/api/v1.0/registration/{request.form["password"]}/{words}/{key_fernet}')
 
 
+# TODO: authentication
 @app.route('/authentication', methods=['GET', 'POST'])
 def authentication():
-    red = f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}'
     if request.method == 'POST':
-        return redirect(red)
+        return redirect(
+            f'/todo/api/v1.0/authentication/{request.form["password"]}/{request.form["words"]}/{request.form["key_fernet"]}')
     return render_template('login.html', what='Authentication')
 
 
@@ -97,6 +99,10 @@ def update_password(password_start, secretWords, key, new_password):
     model.words = hash_words
     model.key_fernet = hash_key
     model.password_words = hash_password_words
+    # update all wallets where late hash_id
+    wallets_late = Wallets.query.filter_by(password_words=session['hash_password_words'])
+    for el in wallets_late:
+        el.password_words = hash_password_words
     # edit session data
     session['password'] = new_password
     session['words'] = secretWords
@@ -114,8 +120,12 @@ def wallets():
             'nav-item nav-link active',
             'nav-item nav-link']
         db.create_all()
+        key_bytes = str(session['key_fernet']).encode()
+        f = Fernet(key_bytes)
         list_wallets = []
         for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
+            # print((f.decrypt((el.wallet).encode())).decode())
+            # print(el.password_words)
             list_wallets.append(el.wallet)
         return render_template('wallets.html', elements_nav=elements_nav, list_wallets=list_wallets)
     else:
@@ -124,15 +134,17 @@ def wallets():
 
 @app.route('/wallet/<WALLET>', methods=['GET', 'POST'])
 def wallet_info(WALLET):
-    # db create all
+    #
     db.create_all()
     key_bytes = str(session['key_fernet']).encode()
     f = Fernet(key_bytes)
-    # decode_wallet
+    #
     decode_wallet = WALLET
-    # WALLET decrypt
-    WALLET = f.decrypt(WALLET.encode()).decode()
+    print(decode_wallet)
+    #
+    WALLET = f.decrypt((WALLET).encode()).decode()
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
+    print(wallet)
     elements_nav = [
         'nav-item nav-link',
         'nav-item nav-link active',
@@ -160,16 +172,16 @@ def get_btc(DECODE_WALLET):
         'nav-item nav-link',
         'nav-item nav-link active',
         'nav-item nav-link']
-    href = f'https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:{wallet_public_address}&amp'
     return render_template('separate_wallet.html', wallet=WALLET, elements_nav=elements_nav,
                            access='qr', decode_wallet=DECODE_WALLET,
-                           src_url=href,
+                           src_url=f'https://api.qrserver.com/v1/create-qr-code/?data=bitcoin:{wallet_public_address}&amp',
                            address=address.address)
 
 
 @app.route('/send_btc/<DECODE_WALLET>', methods=['GET', 'POST'])
 def send_btc(DECODE_WALLET):
     if request.method == 'POST':
+        print(request.form)
         # address to send
         address_to_send = request.form['address_to_send']
         # how much to send
@@ -203,7 +215,7 @@ def send_btc(DECODE_WALLET):
                                        elements_nav=elements_nav, balances=wallet['balances'],
                                        decode_wallet=DECODE_WALLET, address=address.address,
                                        error='SUCCESS!')
-            except BaseException:
+            except BaseException as e:
                 return render_template('send_wallet.html', from_send=wallet['wallet'],
                                        wallet=WALLET,
                                        elements_nav=elements_nav, balances=wallet['balances'],

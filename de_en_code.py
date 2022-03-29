@@ -1,18 +1,16 @@
 from bitcoinaddress import Wallet
+from bit import Key
 import hashlib
 from cryptography.fernet import Fernet
 
 
-wallet = Wallet('211e8b5e3c19bac768be28b10a6fbe973a7422d9b8537ea25a2eabaa94a2d6ee')
-print('-------------')
-print(wallet.key.hex)
-print('-------------')
-print(wallet)
-'''print(f'Public Address bc1 P2WPKH: bc1qulxze7f2mjvz8zxa86lmqn7ugzed6en9mtw3g6')
+wallet = Wallet('1CZTRXQ62q6tWppWxYshxd9MAQSpSZdqSR')
+print(f'Public Address bc1 P2WPKH: bc1qulxze7f2mjvz8zxa86lmqn7ugzed6en9mtw3g6')
 my_key = Key(wallet.testnet)
 print(f'dsds - {wallet.testnet}')
 print(my_key)
 print(my_key.get_balance('usd'))
+'''
 print(my_key.get_balance('eur'))
 print(my_key.get_balance('btc'))
 print(my_key.balance)
