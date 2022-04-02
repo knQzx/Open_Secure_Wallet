@@ -115,12 +115,16 @@ def update_password(password_start, secretWords, key, new_password):
 @app.route('/wallets', methods=['GET', 'POST'])
 def wallets():
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
+        # create nav elements
         elements_nav = [
             'nav-item nav-link',
             'nav-item nav-link active',
             'nav-item nav-link']
+        # create all models if not exists
         db.create_all()
+        # encode fernet key
         key_bytes = str(session['key_fernet']).encode()
+        # create Fernet key
         f = Fernet(key_bytes)
         list_wallets = []
         for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
@@ -132,17 +136,32 @@ def wallets():
         return redirect('/authentication')
 
 
+@app.route('/exit_from_account')
+def exit_from_account():
+    # faq methods
+    if 'hash_password_words' in session and 'password' in session and 'words' in session:
+        # delete all data
+        del session['password']
+        del session['words']
+        del session['hash_password_words']
+        del session['key_fernet']
+        return redirect('/authentication')
+    else:
+        return redirect('/authentication')
+
+
 @app.route('/wallet/<WALLET>', methods=['GET', 'POST'])
 def wallet_info(WALLET):
-    #
+    # create all models if not exists
     db.create_all()
     key_bytes = str(session['key_fernet']).encode()
     f = Fernet(key_bytes)
-    #
+    # create decode_wallet
     decode_wallet = WALLET
     print(decode_wallet)
-    #
+    # decrypt wallet
     WALLET = f.decrypt((WALLET).encode()).decode()
+    # get requests to the api and get json data
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{WALLET}').json()
     print(wallet)
     elements_nav = [
@@ -263,11 +282,13 @@ def create_wallet():
 
 @app.route('/delete_wallet/<wallet>', methods=['GET', 'POST'])
 def delete_wallet(wallet):
+    # create request from api
     wallet = requests.get(f'{address.address}/todo/api/v1.0/get_wallet/{wallet}').json()
     elements_nav = [
         'nav-item nav-link',
         'nav-item nav-link active',
         'nav-item nav-link']
+    # check if we have any money on the wallet
     if float(request.args.get('btc')) >= 0.000000012:
         return render_template('separate_wallet.html', elements_nav=elements_nav,
                                access='delete_or_no', address_wallet=wallet['public_address'],
@@ -277,10 +298,12 @@ def delete_wallet(wallet):
         key_bytes = str(session['key_fernet']).encode()
         f = Fernet(key_bytes)
         list_wallets = {}
+        # append to the list wallet info
         for el in (Wallets.query.filter_by(password_words=session['hash_password_words'])):
             list_wallets[(f.decrypt((el.wallet).encode()).decode())] = el.wallet
         if wallet['wallet'] in list_wallets:
             wallet_address_hash = (list_wallets[wallet['wallet']])
+            # delete this wallet
             Wallets.query.filter_by(wallet=wallet_address_hash).delete()
             # commit => save
             db.session.commit()
@@ -289,6 +312,7 @@ def delete_wallet(wallet):
 
 @app.route('/support', methods=['GET', 'POST'])
 def support():
+    # create redirect
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
         elements_nav = [
             'nav-item nav-link',
@@ -301,21 +325,30 @@ def support():
 
 @app.route('/faq/<METHOD>', methods=['GET', 'POST'])
 def faq(METHOD):
+    # faq methods
     if 'hash_password_words' in session and 'password' in session and 'words' in session:
+        # create nav elements
         elements_nav = [
             'nav-item nav-link',
             'nav-item nav-link',
             'nav-item nav-link active']
+        # render new page
         if METHOD == 'getting_started':
             return render_template('FAQ.html', elements_nav=elements_nav, METHOD='getting_started')
+        # render new page
         elif METHOD == 'get_and_login':
             return render_template('FAQ.html', elements_nav=elements_nav, METHOD='get_and_login')
+        # render new page
         elif METHOD == 'wallet_managment':
             return render_template('FAQ.html', elements_nav=elements_nav, METHOD='wallet_managment')
+        # render new page
         elif METHOD == 'ask_question':
+            # if method post - send message
             if request.method == 'POST':
                 bot = telebot.TeleBot('5153960181:AAFYzT1rs4DTcyqs_XWMwLOwXsZDCsqHLTo')
+                # create answer
                 answer = f'Telegram: {request.form["telegram"]}\n\nQuestion: {request.form["question"]}'
+                # send message
                 bot.send_message(763258583, answer)
                 return render_template('FAQ.html', elements_nav=elements_nav, METHOD='ask_question',
                                        message='sent')
