@@ -17,5 +17,10 @@ inputSelector.addEventListener('input', (event) => {
     //    httpRequest.open('GET', `${window.location.origin}/update_password/${password_start}/${secretWords}/${key}/${event.target.value}`, true);
     //    httpRequest.send(null);
     // reload page
-    location = `${window.location.origin}/update_password/${password_start}/${secretWords}/${key}/${event.target.value}`
+    console.log(event.target.value);
+    if ((event.target.value).length >= 8) {
+        location = `${window.location.origin}/update_password/${password_start}/${secretWords}/${key}/${event.target.value}`;
+    } else {
+        location = `${window.location.origin}/personal_account`
+    }
 });
